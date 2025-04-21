@@ -21,6 +21,36 @@ The goal of this project is to design and implement an email classification syst
 
 
 
+
+2. Set up a virtual environment (optional but recommended):
+bash
+Copy code
+python3 -m venv .venv
+source .venv/bin/activate
+
+3. Install dependencies:
+bash
+Copy code
+pip install -r requirements.txt
+
+
+4.To train the model, run:
+bash
+Copy code
+python train_model.py
+
+5.To start the Flask app locally:
+bash
+Copy code
+python app.py
+
+
+6.The API will be available at http://127.0.0.1:5000.
+
+   
+
+
+
 ## API Usage
 Endpoint: /classify
 Method: POST
