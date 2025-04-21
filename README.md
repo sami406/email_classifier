@@ -1,4 +1,4 @@
-# Email Classification System with PII Masking
+# Email Classification for Support Team
 
 This project classifies incoming support emails into predefined categories (e.g., Billing Issues, Technical Support, Account Management) while ensuring that personal information (PII) is masked before processing. The PII is restored after classification.
 
