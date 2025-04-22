@@ -1,7 +1,4 @@
 flask
-pandas
 scikit-learn
-gradio
+pandas
 joblib
-fastapi
-uvicorn[standard]
