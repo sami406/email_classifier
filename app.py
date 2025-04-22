@@ -1,27 +1,26 @@
-from flask import Flask, request, jsonify
-from masking import mask_pii, unmask_pii
-from model import predict_category
+import gradio as gr
+from masking import mask_pii
+from model import load_model_and_vectorizer, predict_category
 
-app = Flask(__name__)
+# Load model and vectorizer once
+model, vectorizer = load_model_and_vectorizer()
 
-@app.route("/classify", methods=["POST"])
-def classify_email():
-    data = request.json
-    email_text = data.get("email", "")
+def classify_email(email_text):
+    masked_email = mask_pii(email_text)
+    category = predict_category(masked_email, model, vectorizer)
+    return category, masked_email
 
-    # Mask PII
-    masked_text, original_data = mask_pii(email_text)
-
-    # Predict category
-    category = predict_category(masked_text)
-
-    # Unmask text
-    restored_text = unmask_pii(masked_text, original_data)
-
-    return jsonify({
-        "category": category,
-        "email": restored_text
-    })
+# Gradio Interface
+iface = gr.Interface(
+    fn=classify_email,
+    inputs=gr.Textbox(lines=10, label="Enter Support Email"),
+    outputs=[
+        gr.Textbox(label="Predicted Category"),
+        gr.Textbox(label="Masked Email")
+    ],
+    title="Email Classification System with PII Masking",
+    description="Enter a customer support email to classify it into a predefined category after masking personal information."
+)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    iface.launch()
