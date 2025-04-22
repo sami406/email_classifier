@@ -1,18 +1,18 @@
-# Use official Python image from Docker Hub
-FROM python:3.8-slim
+# Read the doc: https://huggingface.co/docs/hub/spaces-sdks-docker
+# you will also find guides on how best to write your Dockerfile
 
-# Set the working directory in the container
+FROM python:3.9
+
+RUN useradd -m -u 1000 user
+USER user
+ENV PATH="/home/user/.local/bin:$PATH"
+
 WORKDIR /app
 
-# Copy the contents of the current directory to /app in the container
-COPY . /app
+COPY --chown=user ./requirements.txt requirements.txt
+RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
-# Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+COPY --chown=user . /app
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7860"]
 
-# Expose the port the app runs on
-EXPOSE 5000
-
-# Command to run the app using Flask
-CMD ["python", "app.py"]
 

@@ -3,3 +3,5 @@ pandas
 scikit-learn
 gradio
 joblib
+fastapi
+uvicorn[standard]
