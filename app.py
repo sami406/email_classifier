@@ -1,18 +1,33 @@
 
 from flask import Flask, request, jsonify
-from masking import mask_pii
-from model import load_model_and_vectorizer, predict_category
+import pickle
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from masking import mask_pii  # assuming you have this utility for PII masking
 
 app = Flask(__name__)
-model, vectorizer = load_model_and_vectorizer()
 
-@app.route("/classify", methods=["POST"])
-def classify_email():
+# Load model and vectorizer
+model = pickle.load(open("models/classifier.pkl", "rb"))
+vectorizer = pickle.load(open("models/vectorizer.pkl", "rb"))
+
+@app.route("/predict", methods=["POST"])
+def predict():
+    # Get the JSON data sent from the client
     data = request.json
-    email = data.get("email", "")
-    masked_email, _ = mask_pii(email)
-    category = predict_category(model, vectorizer, masked_email)
-    return jsonify({"email": email, "category": category})
+    text = data.get("text", "")
+
+    # Preprocess and predict
+    if text:
+        X = vectorizer.transform([text])
+        prediction = model.predict(X)
+        result = {
+            "prediction": prediction[0],
+            "text": mask_pii(text)  # Mask any PII from the text
+        }
+        return jsonify(result)
+    return jsonify({"error": "No text provided"}), 400
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=7860)
+    app.run(host="0.0.0.0", port=5000)
+
