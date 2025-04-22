@@ -1,18 +1,24 @@
-# Read the doc: https://huggingface.co/docs/hub/spaces-sdks-docker
-# you will also find guides on how best to write your Dockerfile
+# Use an official Python runtime as a parent image
+FROM python:3.8
 
-FROM python:3.9
-
-RUN useradd -m -u 1000 user
-USER user
-ENV PATH="/home/user/.local/bin:$PATH"
-
+# Set the working directory in the container
 WORKDIR /app
 
-COPY --chown=user ./requirements.txt requirements.txt
-RUN pip install --no-cache-dir --upgrade -r requirements.txt
+# Copy the current directory contents into the container at /app
+COPY . /app
 
-COPY --chown=user . /app
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7860"]
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Set environment variables (if needed)
+ENV FLASK_APP=app.py
+ENV FLASK_RUN_HOST=0.0.0.0
+
+# Expose the port the app runs on
+EXPOSE 5000
+
+# Run app.py when the container launches
+CMD ["python", "app.py"]
+
 
 
